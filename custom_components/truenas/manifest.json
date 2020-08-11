@@ -1,5 +1,5 @@
 {
-  "domain": "example_load_platform",
+  "domain": "truenas_dev_sensor",
   "name": "TrueNAS RESTful API",
   "documentation": "https://github.com/tprelog/homeassistant-truenas",
   "dependencies": [],
