@@ -12,7 +12,11 @@ from homeassistant.const import (
     CONF_HOST,
 )
 
-from .const import DOMAIN
+from .const import (
+    DOMAIN,
+    STATE_ATTR_STATUS,
+    STATE_ATTR_VERSION,
+)
 
 CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
 
@@ -31,9 +35,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # hass.data[DOMAIN][entry.entry_id] = MyApi(...)
 
     hass.data[DOMAIN] = {
-        'title': entry.title,
-        'state': "CONFUSED",
-        'temperature': 15
+        'system': entry.title,
+        STATE_ATTR_STATUS: "READY",
+        'cpu_temp': 15
     }
 
     for component in PLATFORMS:
