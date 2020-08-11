@@ -14,23 +14,13 @@ from .const import (
 _LOGGER = logging.getLogger(__name__)
 
 
-async def async_setup_platform(hass, config, add_entities, discovery_info=None):
-    """Set up the sensor platform."""
-    # We only want this platform to be set up via discovery.
-    if discovery_info is None:
-        return
-        
-    arg_n = "arg_n value"
-    add_entities([ExampleSensor1(),TrueNASSensor(config, arg_n, "Blah")])
-
-
 async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add a weather entity from a config_entry."""
     # NOTE example: async_add_entities([MetWeather(config_entry.data, hass.config.units.is_metric)])
     
     arg_n = "arg_n value"
     #async_add_entities([TrueNASMusicSensor(config_entry, arg_n, "Blah")]) # maybe Hint hass.config.somethnig??
-    async_add_entities([TrueNASSensor(config_entry, arg_n, "Blah")]) # maybe Hint hass.config.somethnig??
+    async_add_entities([ExampleSensor1(), TrueNASSensor(config_entry, arg_n, "Blah")]) # maybe Hint hass.config.somethnig??
 
 
 class ExampleSensor1(Entity):
@@ -77,8 +67,7 @@ class TrueNASSensor(Entity):
         self._connected = False
         self._cpu_temp = 0
 
-        self._name = "Fucker"        
-        #self._name = arg1_config.host
+        self._name = arg1_config.title
         
         # TODO: Keep learning
         # -ONE-:  self._devide_id = arg1_config["device_id"]
@@ -100,11 +89,16 @@ class TrueNASSensor(Entity):
     def state(self):
         """Return the state of the sensor."""
         return self._cpu_temp
-          
+    
+    @property
+    def unique_id(self):
+        return self._config.entry_id
+
     @property
     def state_attributes(self):
         """Return the state attributes of the sun."""
         return {
+            "Title": self._config.title,
             "Arg N": self._arg_n,
             "Static (arg_x)": self._static,
             "Value": "Static value",

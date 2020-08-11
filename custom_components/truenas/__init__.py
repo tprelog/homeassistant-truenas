@@ -10,7 +10,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.const import (
     CONF_API_KEY,
     CONF_HOST,
-    )
+)
 
 from .const import DOMAIN
 
@@ -31,6 +31,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry):
     # hass.data[DOMAIN][entry.entry_id] = MyApi(...)
 
     hass.data[DOMAIN] = {
+        'title': entry.title,
         'state': "CONFUSED",
         'temperature': 15
     }
@@ -53,7 +54,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
             ]
         )
     )
-    if unload_ok:
-        hass.data[DOMAIN].pop(entry.entry_id)
+    #if unload_ok:
+    #    hass.data[DOMAIN].pop(entry.entry_id)
 
     return unload_ok
