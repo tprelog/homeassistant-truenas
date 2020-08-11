@@ -1,0 +1,52 @@
+{
+  "config": {
+    "title": "TrueNAS RESTful API Senor",
+    "step": {
+      
+      "user": {
+        "title": "TrueNAS RESTful API Sensor",
+        "description": "configuration",
+        "data": {
+          "name": "Insert Name Here",
+          "host": "http://TrueNAS.local",
+          "api_key": "v2.0 RESTful API Key"
+        }
+      }
+    },
+    
+    "error": {
+      "cannot_connect": "Failed to connect, please try again",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unexpected error"
+    },
+    
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  },
+  
+  "options": {
+    "title": "TrueNAS RESTful API Options",
+    "step": {
+      "options_1": {
+        "title": "Options for TrueNAS RESTful API",
+        "description": "Placeholder for future use\n\n(currently, these have no effect)",
+        "data": {
+          "host": "host",
+          "refresh": "Refresh",
+          "enable_something": "Enable Something"
+        }
+      }
+    },
+    
+    "error": {
+      "cannot_connect": "Failed to connect, please try again",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unexpected error"
+    },
+    
+    "abort": {
+      "already_configured": "Device is already configured"
+    }
+  }
+}

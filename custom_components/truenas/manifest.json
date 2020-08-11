@@ -1,6 +1,7 @@
 {
   "domain": "truenas_dev_sensor",
   "name": "TrueNAS RESTful API",
+  "config_flow": true,
   "documentation": "https://github.com/tprelog/homeassistant-truenas",
   "dependencies": [],
   "codeowners": ["@tprelog"],

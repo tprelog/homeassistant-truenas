@@ -69,7 +69,7 @@ class TrueNASSensor(Entity):
     def __init__(self, arg1_config, arg_n, arg_x):
         """Initialize the sensor."""
         
-        self._config = arg1_config        
+        self._config = arg1_config
         self._static = arg_x
         self._arg_n = arg_n
         
