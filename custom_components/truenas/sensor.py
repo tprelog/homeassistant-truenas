@@ -1,6 +1,7 @@
 """Platform for sensor integration."""
 import asyncio
 import logging
+import json
 
 from homeassistant.const import TEMP_CELSIUS
 from homeassistant.helpers.entity import Entity
@@ -18,13 +19,18 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
     """Add a weather entity from a config_entry."""
     # NOTE example: async_add_entities([MetWeather(config_entry.data, hass.config.units.is_metric)])
     
+    coordinator = hass.data[DOMAIN][config_entry.entry_id]
+
+    #example_data = {}
+    #example_sensor_data = example_data
+
     arg_x = "arg X value"
     arg_y = "arg Y value"
 
     async_add_entities(
         [
-            ExampleSensor(config_entry, arg_x, "Dazed"),
-            TrueNASSensor(config_entry, arg_y, "Confused")
+            ExampleSensor(config_entry, coordinator, "Dazed"),
+            TrueNASSensor(config_entry, coordinator, "example_data")
         ]
     ) # something like this ??
 
@@ -32,14 +38,19 @@ async def async_setup_entry(hass, config_entry, async_add_entities):
 class ExampleSensor(Entity):
     """Representation an example temperature sensor."""
 
-    def __init__(self, arg1_config, arg_x, something):
+    def __init__(self, arg1_config, coordinator, dazed):
         """Initialize the sensor."""
 
-        self._config = arg1_config
-        self._name = arg1_config.title + ' CPU Temperature'
+        self.coordinator = coordinator
 
-        self._state = None
-        self._cpu_temp = 0
+        self._config = arg1_config
+        #self._name = arg1_config.title +' Example'
+
+        self._sensor_data = {}
+
+        self._name = coordinator.data['sensor_name']
+        self._state = 0
+        self._count = 0
     
     @property
     def name(self):
@@ -49,7 +60,7 @@ class ExampleSensor(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        return self._cpu_temp
+        return self._state
 
     @property
     def unit_of_measurement(self):
@@ -60,11 +71,45 @@ class ExampleSensor(Entity):
     def unique_id(self):
         return self._config.entry_id + '-cpu'
 
-    def update(self):
+    @property
+    def state_attributes(self):
+        """Return the state attributes of the sun."""
+        return {
+            'data': self._sensor_data,
+            "Count": self._count,
+            "Fake": "shit"
+        }
+
+    @property
+    def available(self):
+        """Return True if entity is available."""
+        return self.coordinator.last_update_success
+
+    @property
+    def entity_registry_enabled_default(self):
+        """Return if the entity should be enabled when first added to the entity registry."""
+        return True
+
+
+    async def async_update(self):
         """Fetch new state data for the sensor.
         This is the only method that should fetch new data for Home Assistant.
         """
-        self._cpu_temp = self.hass.data[DOMAIN]['cpu_temp']
+        
+        await self.coordinator.async_request_refresh()
+
+        #self._name = self._sensor_data['data']['sensor_name']
+        #self._state = self.hass.data[DOMAIN]['cpu.sensor']['cpu_temp']
+        self._count = self.coordinator.data['count']
+        self._state = self.coordinator.data['cpu_temp']
+
+
+
+
+
+
+
+
 
 
 class TrueNASSensor(Entity):
@@ -75,8 +120,8 @@ class TrueNASSensor(Entity):
 
         self._config = arg1_config
         
-        self.arg_2 = arg_y
-        self.arg_3 = confused
+        self.coordinator = arg_y
+        self._data = confused
         
         self._state = None
         self._connected = False
@@ -118,21 +163,38 @@ class TrueNASSensor(Entity):
             "CPU Temp": self._cpu_temp,
             "STATE_ATTR_STATUS": self._state,
             
-            "arg_2 -- value of arg_y": self.arg_2,
-            "arg_3 constant 'confused'": self.arg_3,
+            #"arg_2 -- value of arg_y": self.arg_2,
+            #"arg_3 constant 'confused'": self.arg_3,
             "Value": "another constant value",
 
-            # Helper attr to view config_entry
-            "config_entry": self._config
+            # Helper attr to help me understand
+            "config_entry": self._config,
+
+            # -- worked but called twic
+            # "coordinator data": self._data(),
+            #"coordinator data": self._data,
         }
 
+    @property
+    def entity_registry_enabled_default(self):
+        """Return if the entity should be enabled when first added to the entity registry."""
+        return True
 
-    # https://developers.home-assistant.io/docs/entity_index#updating-the-entity
-    # This is the only method that should fetch new data for Home Assistant.
+    async def async_added_to_hass(self):
+        """Connect to dispatcher listening for entity data notifications."""
+        self.async_on_remove(
+            self.coordinator.async_add_listener(self.async_write_ha_state)
+        )
+
     async def async_update(self):
+        """Update Brother entity."""
+        #await self.coordinator.async_request_refresh()
+
+        # https://developers.home-assistant.io/docs/entity_index#updating-the-entity
+        # This is the only method that should fetch new data for Home Assistant.
         """ Fetch new state data for the sensor. """
         # TODO: Something relevant here... sync library or something
         #self._state = self.hass.data[GM_DOMAIN]['state']
         #self._connected = self.hass.data[DOMAIN]['connected']
-        self._state = self.hass.data[DOMAIN][STATE_ATTR_STATUS],
-        self._cpu_temp = self.hass.data[DOMAIN]['cpu_temp']
+        #self._state = self.hass.data[DOMAIN][STATE_ATTR_STATUS],
+        #self._cpu_temp = self.hass.data[DOMAIN]['cpu_temp']
