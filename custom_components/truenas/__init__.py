@@ -24,7 +24,7 @@ CONFIG_SCHEMA = vol.Schema({DOMAIN: vol.Schema({})}, extra=vol.ALLOW_EXTRA)
 
 PLATFORMS = ["sensor"]
 
-#SCAN_INTERVAL = timedelta(seconds=30)
+SCAN_INTERVAL = timedelta(seconds=30)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -86,8 +86,8 @@ class TrueNASDataUpdateCoordinator(DataUpdateCoordinator):
         """Initialize."""
         self._TrueNAS = HelloWorld(host, api_key)
         super().__init__(
-            #hass,_LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL,
-            hass,_LOGGER, name=DOMAIN,
+            hass,_LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL,
+            #hass,_LOGGER, name=DOMAIN,
         )
 
     async def _async_update_data(self):

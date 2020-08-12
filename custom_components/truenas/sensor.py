@@ -96,7 +96,7 @@ class ExampleSensor(Entity):
         This is the only method that should fetch new data for Home Assistant.
         """
         
-        await self.coordinator.async_request_refresh()
+        #await self.coordinator.async_request_refresh()
 
         #self._name = self._sensor_data['data']['sensor_name']
         #self._state = self.hass.data[DOMAIN]['cpu.sensor']['cpu_temp']
