@@ -13,7 +13,7 @@ At this time, you should expect minimal function and limited quality from this i
 I recommend using [HACS](https://github.com/custom-components/hacs#hacs-home-assistant-community-store) to install and update this custom component
 In HACS Settings --> Custom Repositories, add the following:
     
-    https://github.com/tprelog/homeassistant-gmusic_player
+    https://github.com/tprelog/homeassistant-truenas.git
 
 Use type: `Integration`
 
