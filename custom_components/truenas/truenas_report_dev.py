@@ -18,6 +18,9 @@ class HelloWorld():
 
   def api(self, action, path, payload=None):
     """ return an api endpoint as url """
+    # TODO: replace with a transport adapter, timeouts + retry on failure
+    # https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/#retry-on-failure
+    
     errors = {}
     
     cto = 1   # connection timeout
@@ -30,40 +33,37 @@ class HelloWorld():
     }
     
     try:
-      response = get(f'{self._host}/api/v2.0/{path}', headers=headers, timeout=(cto, rto))
+      response = get(f'{self._host}/api/v2.0/{path}', headers=headers, timeout=(cto,rto))
       if response.status_code != 200:
-        _LOGGER.info(f'ERROR {response.status_code}: {response.text}')
+        _LOGGER.warning(f'ERROR {response.status_code}: {response.text}')
         data = response.status_code
       else:
         data = response.json()
-        _LOGGER.info(f'system/state: {response.text}')
+        _LOGGER.debug(f'api data: {response.text}')
       return data
     
     except:
       _LOGGER.error("API FUNCTION ERROR: unknown exception")
-      _LOGGER.debug(f'{response.text}')
-    return "SHIT"
 
-
-  def get_system_state(self):
-    return self.api('get', '/system/state')
-
-
+    # TODO Use finally
+    return "ERROR"
 
 
   def refresh_data(self):  # pylint:disable=too-many-branches
     """Update data from printer."""
-
-    raw_data = self.get_system_state()
-
-    if not raw_data:
-      self.data = {}
+    data = {}
+    sys_state = self.get_system_state()
+    if not sys_state or sys_state == "ERROR":
+      # self.data = {}
+      self.data = {"system_state": sys_state}
       return
 
-    _LOGGER.debug(f'refresh_data_received: {raw_data}')
+    sys_info = dict(self.get_system_info())
 
-    data = {}
     data = {
+      "system_state": sys_state,
+      "uptime": sys_info['uptime'],
+      "system_info": sys_info,
       "sensor_name": "Hello World",
       "device_class": "temperature",
       "unit_of_measurement": '°C',
@@ -78,6 +78,24 @@ class HelloWorld():
     """ return epoch timestamp """
     now = datetime.now()
     return round(datetime.timestamp(now))
+
+
+  def get_system_info(self):
+    """ get TrueNAS system info """
+    return self.api('GET', '/system/info')
+
+
+  def get_system_state(self):
+    """Returns system state: 
+    "BOOTING" - System is booting
+    "READY" - System completed boot and is ready to use
+    "SHUTTING_DOWN" - System is shutting down"""
+    return self.api('GET', '/system/state')
+
+
+  def get_system_ready(self):
+    """Returns 'true' if system completed boot and is ready to use."""
+    return self.api('GET', '/system/ready')
 
   @property
   def available(self):

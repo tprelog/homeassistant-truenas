@@ -16,7 +16,7 @@ from .truenas_report_dev import HelloWorld
 
 PLATFORMS = ["sensor"]
 
-#SCAN_INTERVAL = timedelta(seconds=30)
+SCAN_INTERVAL = timedelta(seconds=30)
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -54,7 +54,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     """Unload a config entry."""
     unload_ok = all(
         await asyncio.gather(
-            [
+            *[
                 hass.config_entries.async_forward_entry_unload(entry, component)
                 for component in PLATFORMS
             ]
@@ -62,7 +62,7 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry):
     )
     if unload_ok:
         hass.data[DOMAIN].pop(entry.entry_id)
-    
+
     return unload_ok
 
 
@@ -72,8 +72,8 @@ class TrueNASDataUpdateCoordinator(DataUpdateCoordinator):
         """Initialize."""
         self._api = HelloWorld(host, api_key)
         super().__init__(
-            #hass,_LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL,
-            hass,_LOGGER, name=DOMAIN,
+            hass,_LOGGER, name=DOMAIN, update_interval=SCAN_INTERVAL,
+            #hass,_LOGGER, name=DOMAIN,
         )
 
     async def _async_update_data(self):
