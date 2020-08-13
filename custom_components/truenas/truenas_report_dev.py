@@ -18,7 +18,7 @@ class HelloWorld():
 
   def api(self, action, path, payload=None):
     """ return an api endpoint as url """
-    # TODO: replace with a transport adapter, timeouts + retry on failure
+    # TODO replace with a transport adapter, timeouts + retry on failure
     # https://findwork.dev/blog/advanced-usage-python-requests-timeouts-retries-hooks/#retry-on-failure
     
     errors = {}
@@ -36,6 +36,7 @@ class HelloWorld():
       response = get(f'{self._host}/api/v2.0/{path}', headers=headers, timeout=(cto,rto))
       if response.status_code != 200:
         _LOGGER.warning(f'ERROR {response.status_code}: {response.text}')
+        # FIXME data = dict(status: code, attrubute: respons.text)
         data = response.status_code
       else:
         data = response.json()
@@ -45,7 +46,7 @@ class HelloWorld():
     except:
       _LOGGER.error("API FUNCTION ERROR: unknown exception")
 
-    # TODO Use finally
+    # TODO finally: return dict(status: code, attrubute: respons.text)
     return "ERROR"
 
 
