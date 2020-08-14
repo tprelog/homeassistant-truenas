@@ -1,4 +1,4 @@
-"""Config flow for Example integration."""
+"""Config flow for TrueNAS RESTful API integration."""
 import logging
 import time
 
@@ -7,30 +7,24 @@ import voluptuous as vol
 from homeassistant import config_entries, core, exceptions
 from homeassistant.core import callback
 
-import homeassistant.helpers.config_validation as cv
-
 from .const import DOMAIN  # pylint:disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
-DATA_SCHEMA = vol.Schema(
-    {
-        vol.Required("name"): str,
-        vol.Required("host"): str,
-        vol.Required("api_key"): str,
-    }
-)
+DATA_SCHEMA = vol.Schema({"name": str, "host": str, "api_key": str})
+
 
 class PlaceholderHub:
     """Placeholder class to make tests pass.
+
     TODO Remove this placeholder class and replace with things from your PyPI package.
     """
-    def __init__(self, name):
-        """Initialize."""
-        self._name = name
 
-    #async def authenticate(self, username, password) -> bool:
-    async def authenticate(self, name) -> bool:
+    def __init__(self, host):
+        """Initialize."""
+        self.host = host
+
+    async def authenticate(self, username, password) -> bool:
         """Test if we can authenticate with the host."""
         return True
 
@@ -47,11 +41,10 @@ async def validate_input(hass: core.HomeAssistant, data):
     # await hass.async_add_executor_job(
     #     your_validate_func, data["username"], data["password"]
     # )
-    
-    hub = PlaceholderHub(data["name"])
 
-    #if not await hub.authenticate(data["username"], data["password"]):
-    if not await hub.authenticate(data["name"]):
+    hub = PlaceholderHub(data["host"])
+
+    if not await hub.authenticate(data["username"], data["password"]):
         raise InvalidAuth
 
     # If you cannot connect:
@@ -61,36 +54,21 @@ async def validate_input(hass: core.HomeAssistant, data):
 
     # Return info that you want to store in the config entry.
     return {"title": "Name of the device"}
-    
-#
-# ---------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------
-#   CONFIG FLOW:
-# - https://developers.home-assistant.io/docs/config_entries_config_flow_handler#defining-steps
-#
-#   DATA FLOW ENTRY --> https://developers.home-assistant.io/docs/data_entry_flow_index
-# ---------------------------------------------------------------------------------------------
-#
+
+
 @config_entries.HANDLERS.register(DOMAIN)
 class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
-    """Handle a config flow for Example."""
-    # The schema version of the entries that it creates
-    # Home Assistant will call your migrate method if the version changes
-    # (this is not implemented yet)
+    """Handle a config flow for TrueNAS RESTful API."""
+
     VERSION = 1
-    
-    # TODO pick one of the available connection classes in homeassistant/config_entries.py
     CONNECTION_CLASS = config_entries.CONN_CLASS_LOCAL_POLL
-    
-    ## user initiated -- step 1
+
     async def async_step_user(self, user_input=None):
         """Handle the initial step."""
         errors = {}
         if user_input is not None:
-            """TODO - actually validate something"""
-            pass
-
-            try: 
+            try:
+                #info = await validate_input(self.hass, user_input)
                 await self.async_set_unique_id(time.time_ns())
                 return self.async_create_entry(
                     title = user_input["name"],
@@ -98,7 +76,8 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                         "host": user_input["host"],
                         "api_key": user_input["api_key"]
                     }
-                )            
+                )
+
             except CannotConnect:
                 errors["base"] = "cannot_connect"
             except InvalidAuth:
@@ -107,27 +86,17 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                 _LOGGER.exception("Unexpected exception")
                 errors["base"] = "unknown"
 
-
-        ## show user initiated form - step 1
         return self.async_show_form(
             step_id="user", data_schema=DATA_SCHEMA, errors=errors
         )
-    
 
     # CALLBACK FOR OPTIONS FLOWS
     @staticmethod
     @callback
     def async_get_options_flow(config_entry):
         return OptionsFlowHandler(config_entry)
-#
-# ---------------------------------------------------------------------------------------------
-# ---------------------------------------------------------------------------------------------
-#   OPTIONS FLOW:
-# - https://developers.home-assistant.io/docs/config_entries_options_flow_handler#options-support
-#
-#   DATA FLOW ENTRY --> https://developers.home-assistant.io/docs/data_entry_flow_index
-# ---------------------------------------------------------------------------------------------
-#
+
+
 class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry):
         """Initialize options flow."""
@@ -150,17 +119,13 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             data_schema = vol.Schema(
                 {
                     vol.Optional(
-                        "host",
-                        default=self.config_entry.data.get('host', "http://TrueNaS.local"),
-                        ): str,
+                        "example_check",
+                        default=self.config_entry.options.get('example_check', True),
+                        ): bool,
                     vol.Optional(
-                        "refresh",
-                        default=self.config_entry.options.get('refresh', "60"),
-                        ): str,
-                    vol.Optional(
-                        "enable_something",
-                        default=self.config_entry.options.get('enable_something', True),
-                        ): bool
+                        "example_input",
+                        default=self.config_entry.options.get('example_input', "suggest something"),
+                        ): str
                 }
             )
         )
@@ -169,19 +134,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         """Update config entry options."""
         return self.async_create_entry(title="", data=self.options)
 
-#
-#
-# -------------------------------------------------------
-# -------------------------------------------------------
-#       """Default entries from scaffold"""
 
 class CannotConnect(exceptions.HomeAssistantError):
     """Error to indicate we cannot connect."""
 
+
 class InvalidAuth(exceptions.HomeAssistantError):
     """Error to indicate there is invalid auth."""
-
-# -------------------------------------------------------
-# -------------------------------------------------------
-#
-#

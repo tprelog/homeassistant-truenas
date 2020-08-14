@@ -11,35 +11,24 @@
         "step": {
             "user": {
                 "data": {
-                    "name": "name",
-                    "host": "http://TrueNAS.local",
-                    "api_key": "v2.0 RESTful API Key"
+                    "name": "Name",
+                    "host": "IP address",
+                    "api_key": "API key"
                 },
-                "title": "TrueNAS RESTful API Sensor",
-                "description": "configuration"
+                "description": "Server Configuration"
             }
         }
     },
-
     "options": {
-        "abort": {
-            "already_configured": "Device is already configured"
-        },
-        "error": {
-            "cannot_connect": "Failed to connect, please try again",
-            "invalid_auth": "Invalid authentication",
-            "unknown": "Unexpected error"
-        },
         "step": {
             "options_1": {
                 "data": {
-                    "host": "Host",
-                    "refrsh": "refresh",
-                    "enable_something": "Enable Something"
+                    "example_check": "example_check",
+                    "example_input": "example_input"
                 },
-                "title": "TrueNAS RESTful API Options",
-                "description": "Placeholder for future use\n\n(currently, these have no effect)"
+                "description": "Example Options"
             }
         }
-    }
+    },
+    "title": "TrueNAS RESTful API"
 }
