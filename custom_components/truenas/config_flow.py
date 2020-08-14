@@ -11,7 +11,13 @@ from .const import DOMAIN  # pylint:disable=unused-import
 
 _LOGGER = logging.getLogger(__name__)
 
-DATA_SCHEMA = vol.Schema({"name": str, "host": str, "api_key": str})
+DATA_SCHEMA = vol.Schema(
+    {
+        vol.Required("name"): str,
+        vol.Required("host"): str,
+        vol.Required("api_key"): str,
+    }
+)
 
 
 class PlaceholderHub:
@@ -19,12 +25,12 @@ class PlaceholderHub:
 
     TODO Remove this placeholder class and replace with things from your PyPI package.
     """
-
-    def __init__(self, host):
+    def __init__(self, name):
         """Initialize."""
-        self.host = host
+        self._name = name
 
-    async def authenticate(self, username, password) -> bool:
+    #async def authenticate(self, username, password) -> bool:
+    async def authenticate(self, name) -> bool:
         """Test if we can authenticate with the host."""
         return True
 
@@ -42,9 +48,10 @@ async def validate_input(hass: core.HomeAssistant, data):
     #     your_validate_func, data["username"], data["password"]
     # )
 
-    hub = PlaceholderHub(data["host"])
+    hub = PlaceholderHub(data["name"])
 
-    if not await hub.authenticate(data["username"], data["password"]):
+    #if not await hub.authenticate(data["username"], data["password"]):
+    if not await hub.authenticate(data["name"]):
         raise InvalidAuth
 
     # If you cannot connect:
@@ -53,7 +60,7 @@ async def validate_input(hass: core.HomeAssistant, data):
     # InvalidAuth
 
     # Return info that you want to store in the config entry.
-    return {"title": "Name of the device"}
+    return {"title": "Insert hostname here"}
 
 
 @config_entries.HANDLERS.register(DOMAIN)
@@ -68,11 +75,13 @@ class ConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         errors = {}
         if user_input is not None:
             try:
-                #info = await validate_input(self.hass, user_input)
+                # TODO info = await validate_input(self.hass, user_input)
+                # ---- return hostname -> use that for a 'title' instead of using 'name'
                 await self.async_set_unique_id(time.time_ns())
                 return self.async_create_entry(
                     title = user_input["name"],
                     data = {
+                        "name": user_input["name"],
                         "host": user_input["host"],
                         "api_key": user_input["api_key"]
                     }

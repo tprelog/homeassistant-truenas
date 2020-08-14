@@ -3,23 +3,31 @@
   "config": {
     "step": {
       "user": {
+        "description": "Server Configuration",
         "data": {
           "name": "Name",
           "host": "IP address",
           "api_key": "API key"
-        },
-        "description": "Server Configuration"
+        }
       }
+    },
+    "error": {
+      "cannot_connect": "Failed to connect, please try again",
+      "invalid_auth": "Invalid authentication",
+      "unknown": "Unexpected error"
+    },
+    "abort": {
+      "already_configured": "Device is already configured"
     }
   },
   "options": {
     "step": {
       "options_1": {
+        "description": "Example Options",
         "data": {
           "example_check": "example_check",
           "example_input": "example_input"
-        },
-        "description": "Example Options"
+        }
       }
     },
     "error": {
