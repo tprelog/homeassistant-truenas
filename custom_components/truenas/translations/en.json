@@ -13,13 +13,12 @@
                 "data": {
                     "name": "name",
                     "host": "http://TrueNAS.local",
-                    "api_key": "v2.0 RESTful API Key"                    
+                    "api_key": "v2.0 RESTful API Key"
                 },
                 "title": "TrueNAS RESTful API Sensor",
                 "description": "configuration"
             }
-        },
-        "title": "TrueNAS RESTful API Sensor"
+        }
     },
 
     "options": {
@@ -41,7 +40,6 @@
                 "title": "TrueNAS RESTful API Options",
                 "description": "Placeholder for future use\n\n(currently, these have no effect)"
             }
-        },
-        "title": "TrueNAS RESTful API Options"
+        }
     }
 }
